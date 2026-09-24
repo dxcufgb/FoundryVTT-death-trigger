@@ -1,6 +1,6 @@
 {
   "id": "dxcufgbs-death-trigger",
-  "title": "Death Trigger Alerts",
+  "title": "Dxcufgb's Death Trigger Alerts",
   "description": "System-agnostic helper that alerts the GM with a whispered chat card and a sound when an NPC with a death-triggered feature (Undead Fortitude, Death Burst, Death Throes, ...) is reduced to 0 HP, with a button to use that feature.",
   "version": "1.0.0",
   "authors": [
@@ -13,11 +13,11 @@
     "minimum": "13",
     "verified": "13"
   },
-  "url": "https://github.com/Dxcufgb/dxcufgbs-death-trigger",
-  "manifest": "https://github.com/Dxcufgb/dxcufgbs-death-trigger/releases/latest/download/module.json",
-  "download": "https://github.com/Dxcufgb/dxcufgbs-death-trigger/releases/latest/download/module.zip",
-  "bugs": "https://github.com/Dxcufgb/dxcufgbs-death-trigger/issues",
-  "readme": "https://github.com/Dxcufgb/dxcufgbs-death-trigger#readme",
+  "url": "https://github.com/dxcufgb/FoundryVTT-death-trigger",
+  "manifest": "https://github.com/dxcufgb/FoundryVTT-death-trigger/releases/latest/download/module.json",
+  "download": "https://github.com/dxcufgb/FoundryVTT-death-trigger/releases/latest/download/module.zip",
+  "bugs": "https://github.com/dxcufgb/FoundryVTT-death-trigger/issues",
+  "readme": "https://github.com/dxcufgb/FoundryVTT-death-trigger#readme",
   "license": "LICENSE",
   "esmodules": [
     "scripts/death-trigger.js"

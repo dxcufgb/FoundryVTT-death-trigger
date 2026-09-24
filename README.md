@@ -9,7 +9,7 @@ System-agnostic helper that alerts the GM with a whispered chat card and a sound
 In Foundry: **Add-on Modules → Install Module**, paste this link into **Manifest URL** at the bottom, and click **Install**:
 
 ```
-https://github.com/Dxcufgb/dxcufgbs-death-trigger/releases/latest/download/module.json
+https://github.com/dxcufgb/FoundryVTT-death-trigger/releases/latest/download/module.json
 ```
 
 ## Features
