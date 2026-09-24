@@ -1,0 +1,44 @@
+{
+  "DXDT": {
+    "Settings": {
+      "Keywords": {
+        "Name": "Death trigger feature names",
+        "Hint": "Comma-separated list. Any item on the creature whose name contains one of these (case-insensitive) counts as a death trigger."
+      },
+      "ScanDescriptions": {
+        "Name": "Also scan feature descriptions",
+        "Hint": "If enabled, items whose description contains one of the phrases below also count as death triggers."
+      },
+      "Phrases": {
+        "Name": "Description phrases",
+        "Hint": "Comma-separated list of phrases searched for in item descriptions (case-insensitive)."
+      },
+      "HpPath": {
+        "Name": "HP attribute path",
+        "Hint": "Path inside actor.system to the current HP value, e.g. attributes.hp.value. Leave empty to use the game system's primary token bar attribute (dnd5e: attributes.hp.value)."
+      },
+      "IgnorePlayerOwned": {
+        "Name": "Only check non-player creatures",
+        "Hint": "Skip actors that have a player owner (player characters, companions)."
+      },
+      "Sound": {
+        "Name": "Alert sound",
+        "Hint": "Sound played for the GM when a death trigger alert is posted. Leave empty for no sound."
+      },
+      "Volume": {
+        "Name": "Alert volume",
+        "Hint": "Volume of the alert sound (0 - 1)."
+      }
+    },
+    "Chat": {
+      "Title": "Death Trigger!",
+      "Message": "<strong>{name}</strong> got reduced to 0 HP, remember the death trigger!",
+      "Use": "Use {item}",
+      "Open": "Open feature sheet"
+    },
+    "Notify": {
+      "ItemMissing": "Death Trigger: the feature could not be found (was the creature deleted?).",
+      "Posted": "Death Trigger: posted {item} to chat."
+    }
+  }
+}

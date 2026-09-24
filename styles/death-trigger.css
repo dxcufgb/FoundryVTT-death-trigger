@@ -1,0 +1,58 @@
+.dxdt-card {
+  border: 2px solid #8b1a1a;
+  border-radius: 6px;
+  padding: 6px;
+  background: rgba(139, 26, 26, 0.08);
+}
+
+.dxdt-card .dxdt-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.dxdt-card .dxdt-header img {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 4px;
+  object-fit: cover;
+  flex: 0 0 40px;
+}
+
+.dxdt-card .dxdt-title {
+  margin: 0;
+  font-size: 1.1em;
+  font-weight: bold;
+  color: #8b1a1a;
+  border: none;
+}
+
+.dxdt-card .dxdt-text {
+  margin: 0 0 6px;
+}
+
+.dxdt-card .dxdt-trigger {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.dxdt-card .dxdt-trigger button.dxdt-use {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+}
+
+.dxdt-card .dxdt-trigger button.dxdt-use img {
+  width: 20px;
+  height: 20px;
+  border: none;
+}
+
+.dxdt-card .dxdt-trigger button.dxdt-open {
+  flex: 0 0 32px;
+}
