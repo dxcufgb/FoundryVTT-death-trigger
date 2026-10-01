@@ -1,17 +1,15 @@
 {
   "DXDT": {
     "Settings": {
-      "Keywords": {
-        "Name": "Death trigger feature names",
-        "Hint": "Comma-separated list. Any item on the creature whose name contains one of these (case-insensitive) counts as a death trigger."
+      "ExportList": {
+        "Name": "Export Death Trigger list",
+        "Label": "Export Death Trigger list",
+        "Hint": "Downloads this world's Death Trigger list as a JSON file. Add or remove features by right-clicking an item (Items sidebar, compendiums, actor sheets)."
       },
-      "ScanDescriptions": {
-        "Name": "Also scan feature descriptions",
-        "Hint": "If enabled, items whose description contains one of the phrases below also count as death triggers."
-      },
-      "Phrases": {
-        "Name": "Description phrases",
-        "Hint": "Comma-separated list of phrases searched for in item descriptions (case-insensitive)."
+      "ImportList": {
+        "Name": "Import Death Trigger list",
+        "Label": "Import Death Trigger list",
+        "Hint": "Replaces this world's Death Trigger list with a JSON file made with Export. This can't be undone, so export the current list first if you may want it back."
       },
       "HpPath": {
         "Name": "HP attribute path",
@@ -30,15 +28,77 @@
         "Hint": "Volume of the alert sound (0 - 1)."
       }
     },
+    "Context": {
+      "Add": "Add to Death Trigger list",
+      "Remove": "Remove from Death Trigger list"
+    },
+    "Import": {
+      "Title": "Import Death Trigger list",
+      "Choose": "Choose a Death Trigger list file (.json) made with <strong>Export Death Trigger list</strong>.",
+      "Next": "Next",
+      "NoFile": "Death Trigger: no file was chosen.",
+      "NotJson": "the file is not valid JSON.",
+      "NoFeatures": "the file has no \"features\" list. Use a file made with Export Death Trigger list.",
+      "BadEntry": "entry {index} in \"features\" has no name.",
+      "Failed": "Death Trigger: could not import the list, {error}",
+      "ConfirmTitle": "Replace the Death Trigger list?",
+      "Warning": "Importing <strong>{file}</strong> ({count} features) will permanently replace this world's current Death Trigger list ({current} features).",
+      "Irreversible": "This is irreversible. The current list can't be restored unless you have exported it.",
+      "Question": "Do you understand and want to replace the list?",
+      "Yes": "Yes, replace the list",
+      "No": "No",
+      "Done": "Death Trigger: imported {count} features from {file}. This world's list has been replaced."
+    },
     "Chat": {
       "Title": "Death Trigger!",
       "Message": "<strong>{name}</strong> got reduced to 0 HP, remember the death trigger!",
       "Use": "Use {item}",
-      "Open": "Open feature sheet"
+      "Open": "Open feature sheet",
+      "Exclude": "Don't alert for this feature again"
     },
     "Notify": {
       "ItemMissing": "Death Trigger: the feature could not be found (was the creature deleted?).",
-      "Posted": "Death Trigger: posted {item} to chat."
+      "Posted": "Death Trigger: posted {item} to chat.",
+      "ListCreated": "Death Trigger: this world's Death Trigger list was set up with {count} features.",
+      "ListLoadFailed": "Death Trigger: could not load the default Death Trigger list. See the console (F12) for details.",
+      "NoList": "Death Trigger: this world has no Death Trigger list yet. Reload the world as GM to create it.",
+      "Added": "Death Trigger: {item} was added to the Death Trigger list.",
+      "Removed": "Death Trigger: {item} was removed from the Death Trigger list.",
+      "Exported": "Death Trigger: exported {count} features to {file}.",
+      "Set": {
+        "auto": "Death Trigger: {item} follows the Death Trigger list again.",
+        "always": "Death Trigger: {item} is always a death trigger.",
+        "never": "Death Trigger: {item} is excluded."
+      }
+    },
+    "Item": {
+      "Title": "Death trigger",
+      "Short": "Death trigger",
+      "Intro": "Should <strong>{item}</strong> count as a death trigger?",
+      "Mode": "Death trigger",
+      "Auto": "Automatic (the Death Trigger list)",
+      "Always": "Always a death trigger",
+      "Never": "Never a death trigger (excluded)",
+      "AutoResult": "The Death Trigger list gives:",
+      "Save": "Save"
+    },
+    "Status": {
+      "always": "always a death trigger (set on this item).",
+      "never": "never a death trigger (excluded on this item).",
+      "list": "a death trigger, it matches \"{detail}\" in the Death Trigger list.",
+      "none": "not a death trigger, it isn't in the Death Trigger list."
+    },
+    "Exclude": {
+      "Title": "Exclude from death trigger",
+      "Question": "Stop alerting for <strong>{item}</strong>?",
+      "Hint": "You can undo this from the feature sheet's header (Death trigger) or by right-clicking the feature and choosing Add to Death Trigger list.",
+      "Token": "Only this creature",
+      "Actor": "All {actor} creatures",
+      "Name": "Remove \"{item}\" from the Death Trigger list",
+      "Done": {
+        "token": "Death Trigger: {item} is excluded for this creature.",
+        "actor": "Death Trigger: {item} is excluded for all {actor} creatures."
+      }
     }
   }
 }
