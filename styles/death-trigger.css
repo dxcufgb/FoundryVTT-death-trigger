@@ -56,3 +56,24 @@
 .dxdt-card .dxdt-trigger button.dxdt-open {
   flex: 0 0 32px;
 }
+
+.dxdt-card .dxdt-trigger button.dxdt-exclude {
+  flex: 0 0 32px;
+}
+
+.dxdt-card .dxdt-trigger.dxdt-excluded {
+  opacity: 0.45;
+}
+
+.dxdt-card .dxdt-trigger.dxdt-excluded button.dxdt-use span {
+  text-decoration: line-through;
+}
+
+.dxdt-config select {
+  flex: 2;
+}
+
+.dxdt-exclude-dialog .form-footer,
+.dxdt-exclude-dialog footer {
+  flex-wrap: wrap;
+}
