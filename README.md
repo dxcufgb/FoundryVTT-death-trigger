@@ -34,6 +34,7 @@ A feature counts as a death trigger when its name is in the world's **Death Trig
 
 - The module ships a default list in `data/death-triggers.json`: monster features such as *Undead Fortitude* and *Death Burst*, plus D&D 5E (2014) and 5.5E (2024) class features, feats, species traits, spells and magic items that trigger on death or at 0 HP.
 - The first time a GM opens a world with this version, the list is copied into that world. From then on each world has its own copy, and changes in one world don't affect others. Names typed into the old *Death trigger feature names* setting are carried over.
+- When a module update adds new entries to the default list, they are added to every world's copy the next time a GM opens it (the GM gets a notification naming them). Each new entry is only added once: if you remove it, it stays removed. Entries you already have, or added yourself under the same name, aren't duplicated.
 - Names are matched ignoring case, apostrophe style and text in parentheses, so *Great Weapon Master* matches the entry *Great Weapon Master (Hew)*. Monster entries match anywhere in the name, so *Undead Fortitude (1/Day)* still counts.
 
 ### Adding and removing features

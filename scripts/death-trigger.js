@@ -9,6 +9,8 @@
  * What counts as a death trigger:
  *   - Each world keeps its own copy of the Death Trigger list (a world setting). It is filled
  *     from data/death-triggers.json the first time a GM opens the world with this version.
+ *   - Entries added to data/death-triggers.json in a later module version are added to the
+ *     world's copy automatically (see mergeNewDefaults). Entries the GM removed stay removed.
  *   - An item is a death trigger when its name matches an entry in that list.
  *   - Right-click an item (Items sidebar, compendiums, dnd5e actor sheets) and choose
  *     "Add to Death Trigger list" / "Remove from Death Trigger list".
@@ -122,6 +124,7 @@ Hooks.once("ready", async () => {
   }
   try {
     await ensureList();
+    await mergeNewDefaults();
   } catch (err) {
     console.error(`${MODULE_ID} | ensureList`, err);
   }
@@ -313,6 +316,50 @@ async function ensureList() {
 
   await saveList(data);
   ui.notifications.info(game.i18n.format("DXDT.Notify.ListCreated", { count: data.features.length }));
+}
+
+/** The list's version number; lists from before versioning count as 1. */
+function listVersion(data) {
+  const v = Number(data?.version);
+  return Number.isInteger(v) && v > 0 ? v : 1;
+}
+
+/**
+ * Add entries that are new in the module's default list to the world's list.
+ * Each new default entry has "listVersion": the list version it was added in. Entries newer
+ * than the world's list version are added (unless the world already has that id or name),
+ * then the world's version is raised. Entries are only ever offered once, so one the GM
+ * removed later is not added back.
+ */
+async function mergeNewDefaults() {
+  const current = getList();
+  if (!current || !isResponsibleGM()) return;
+  const data = await loadDefaultList();
+  if (!data) return;
+
+  const worldVersion = listVersion(current);
+  const defaultVersion = listVersion(data);
+  if (defaultVersion <= worldVersion) return;
+
+  const merged = foundry.utils.deepClone(current);
+  const ids = new Set(merged.features.map(e => e?.id).filter(Boolean));
+  const known = merged.features.map(compileEntry);
+  const added = [];
+  for (const entry of data.features) {
+    if (listVersion({ version: entry.listVersion }) <= worldVersion) continue;
+    if (ids.has(entry.id) || known.some(c => entryMatches(c, entry.name))) continue;
+    merged.features.push(entry);
+    ids.add(entry.id);
+    known.push(compileEntry(entry));
+    added.push(entry.name);
+  }
+  merged.version = defaultVersion;
+  merged.triggerTypes = { ...(data.triggerTypes ?? {}), ...(merged.triggerTypes ?? {}) };
+
+  await saveList(merged);
+  if (added.length) {
+    ui.notifications.info(game.i18n.format("DXDT.Notify.ListUpdated", { count: added.length, items: added.join(", ") }));
+  }
 }
 
 /** Add an item (or anything with a name) to the world's list. */
