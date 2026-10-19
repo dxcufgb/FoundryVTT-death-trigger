@@ -1,5 +1,6 @@
 {
-  "version": 1,
+  "version": 2,
+  "versioning": "version is the list's version. An entry with listVersion N was added in list version N (no listVersion means 1). When the module's list has a higher version than a world's copy, entries newer than the world's version are added to it once.",
   "matching": "An item counts as a death trigger when its name matches an entry's name (or one of its aliases). match 'exact' ignores case, apostrophe style and text in parentheses; match 'contains' matches anywhere in the item's name.",
   "triggerTypes": {
     "creature_dies_nearby": "Any (often filtered) creature dies within range",
@@ -83,6 +84,6 @@
     {"id": "monster-final-act", "name": "Final Act", "type": "monster", "owner": null, "level": null, "edition": "both", "source": "Monster stat blocks", "trigger": "self_dies", "filter": null, "rangeFt": null, "action": "none", "limit": null, "effect": "Triggers when the creature dies or drops to 0 HP; see the creature's stat block.", "match": "contains"},
     {"id": "monster-last-gasp", "name": "Last Gasp", "type": "monster", "owner": null, "level": null, "edition": "both", "source": "Monster stat blocks", "trigger": "self_dies", "filter": null, "rangeFt": null, "action": "none", "limit": null, "effect": "Triggers when the creature dies or drops to 0 HP; see the creature's stat block.", "match": "contains"},
     {"id": "monster-unstable-death", "name": "Unstable Death", "type": "monster", "owner": null, "level": null, "edition": "both", "source": "Monster stat blocks", "trigger": "self_dies", "filter": null, "rangeFt": null, "action": "none", "limit": null, "effect": "Triggers when the creature dies or drops to 0 HP; see the creature's stat block.", "match": "contains"},
-    {"id": "monster-shrapnel-explosion", "name": "Shrapnel Explosion", "type": "monster", "owner": null, "level": null, "edition": "both", "source": "Monster stat blocks", "trigger": "self_dies", "filter": null, "rangeFt": null, "action": "none", "limit": null, "effect": "When it dies, it explodes and showers creatures around it with shrapnel; see the creature's stat block.", "match": "contains"}
+    {"id": "monster-shrapnel-explosion", "name": "Shrapnel Explosion", "type": "monster", "owner": null, "level": null, "edition": "both", "source": "Monster stat blocks", "trigger": "self_dies", "filter": null, "rangeFt": null, "action": "none", "limit": null, "effect": "When it dies, it explodes and showers creatures around it with shrapnel; see the creature's stat block.", "match": "contains", "listVersion": 2}
   ]
 }

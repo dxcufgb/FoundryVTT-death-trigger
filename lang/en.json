@@ -60,6 +60,7 @@
       "ItemMissing": "Death Trigger: the feature could not be found (was the creature deleted?).",
       "Posted": "Death Trigger: posted {item} to chat.",
       "ListCreated": "Death Trigger: this world's Death Trigger list was set up with {count} features.",
+      "ListUpdated": "Death Trigger: added {count} new features from the module's default list to this world's Death Trigger list: {items}.",
       "ListLoadFailed": "Death Trigger: could not load the default Death Trigger list. See the console (F12) for details.",
       "NoList": "Death Trigger: this world has no Death Trigger list yet. Reload the world as GM to create it.",
       "Added": "Death Trigger: {item} was added to the Death Trigger list.",
