@@ -327,7 +327,8 @@ function listVersion(data) {
 /**
  * Add entries that are new in the module's default list to the world's list.
  * Each new default entry has "listVersion": the list version it was added in. Entries newer
- * than the world's list version are added (unless the world already has that id or name),
+ * than the world's list version are added (unless the world already has that id or name;
+ * names are compared whole, so a broad "contains" entry doesn't hide a new default),
  * then the world's version is raised. Entries are only ever offered once, so one the GM
  * removed later is not added back.
  */
@@ -343,14 +344,15 @@ async function mergeNewDefaults() {
 
   const merged = foundry.utils.deepClone(current);
   const ids = new Set(merged.features.map(e => e?.id).filter(Boolean));
-  const known = merged.features.map(compileEntry);
+  const nameKey = name => withoutParens(normalizeName(name));
+  const names = new Set(merged.features.flatMap(e => [e?.name, ...(Array.isArray(e?.aliases) ? e.aliases : [])]).map(nameKey).filter(Boolean));
   const added = [];
   for (const entry of data.features) {
     if (listVersion({ version: entry.listVersion }) <= worldVersion) continue;
-    if (ids.has(entry.id) || known.some(c => entryMatches(c, entry.name))) continue;
+    if (ids.has(entry.id) || names.has(nameKey(entry.name))) continue;
     merged.features.push(entry);
     ids.add(entry.id);
-    known.push(compileEntry(entry));
+    names.add(nameKey(entry.name));
     added.push(entry.name);
   }
   merged.version = defaultVersion;
