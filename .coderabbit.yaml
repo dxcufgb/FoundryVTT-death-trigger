@@ -1,0 +1,19 @@
+# CodeRabbit settings for FoundryVTT-death-trigger.
+# Shared rules come from the central dxcufgb/coderabbit repository (inheritance: true), and CodeRabbit reads
+# the README as code guidelines. Only what is specific to this repository is here.
+# Check the merged result on a pull request with: @coderabbitai configuration
+inheritance: true
+
+reviews:
+  path_instructions:
+    - path: "scripts/**/*.js"
+      instructions: |
+        Alerts the GM when an NPC with a death-triggered feature drops to 0 HP: the chat card is whispered to
+        GMs only and must never reveal the feature to players (also not via flags on public messages). Only one
+        client acts (the active GM), so an alert is not repeated per connected client. Must stay system agnostic:
+        guard system-specific paths and fail soft.
+    - path: ".github/workflows/{ci,release}.yml"
+      instructions: |
+        Thin callers of dxcufgb/foundry-module-ci, identical in every Foundry module repository. Flag any change
+        here that is not the same change in all modules (it belongs in foundry-module-ci instead), except the
+        pinned SHA of foundry-module-ci itself.
