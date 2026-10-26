@@ -6,6 +6,8 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/dxcufgb/FoundryVTT-death-trigger/ci.yml?branch=main&label=CI)](https://github.com/dxcufgb/FoundryVTT-death-trigger/actions/workflows/ci.yml)
 [![License](https://img.shields.io/github/license/dxcufgb/FoundryVTT-death-trigger)](LICENSE)
 
+<a href="https://dxcufgb.github.io/FVTT-dev-showcase/"><img src="https://dxcufgb.github.io/FVTT-dev-showcase/assets/img/workshop-badge.png" alt="Dxcufgb's Workshop: every Foundry VTT project, video and changelog in one place" width="650"></a>
+
 System-agnostic helper that alerts the GM with a whispered chat card and a sound when an NPC with a death-triggered feature (Undead Fortitude, Death Burst, Death Throes, ...) is reduced to 0 HP, with a button to use that feature.
 
 **Foundry VTT:** v13
