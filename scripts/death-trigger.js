@@ -26,18 +26,24 @@
  *       item.setFlag("dxcufgbs-death-trigger", "trigger", false)  // never a death trigger
  *       item.unsetFlag("dxcufgbs-death-trigger", "trigger")       // back to automatic (the list)
  *
- * API: game.modules.get("dxcufgbs-death-trigger").api
- *   .findTriggers(actor)       -> Item[]
- *   .alert(actor)              -> posts the GM card for this actor (ignores HP)
- *   .triggerStatus(item)       -> { trigger, reason, detail }
- *   .getList()                 -> the world's list ({ version, triggerTypes, features })
- *   .isListed(nameOrItem)      -> boolean
- *   .addToList(item)           -> adds the item's name to the world's list
- *   .removeFromList(nameOrItem)-> removes the entries matching that name
- *   .exportList()              -> downloads the world's list as JSON
- *   .importList()              -> pick an exported JSON file and (after a yes/no warning) replace the world's list
- *   .resetList()               -> replaces the world's list with the module's default list
- *   .configureItem(item)       -> opens the Automatic / Always / Never dialog
+ * API: game.modules.get("dxcufgbs-death-trigger").api (set on "ready")
+ *   .findTriggers(actor)          -> Item[]: the actor's items that count as death triggers
+ *   .alert(actor, triggers?)      -> posts the GM card for this actor (ignores HP and the other checks);
+ *                                    triggers: Item[] to show (default findTriggers(actor))
+ *                                    -> Promise<ChatMessage|null> (null when there are no triggers)
+ *   .triggerStatus(item)          -> { trigger, reason, detail? }; reason "always" | "never" | "list" | "none",
+ *                                    detail = the matching list entry's name when reason is "list"
+ *   .hpPathFor(actor)             -> the HP path inside actor.system that is watched, e.g. "attributes.hp.value"
+ *   .getList()                    -> the world's list ({ version, triggerTypes, features }), or null before setup
+ *   .isListed(nameOrItem)         -> boolean
+ *   .addToList(itemOrName)        -> GM: adds the name to the world's list -> Promise<boolean> (false if already listed)
+ *   .removeFromList(nameOrItem)   -> GM: removes the entries matching that name -> Promise<boolean>
+ *   .exportList()                 -> GM: downloads the world's list as JSON
+ *   .importList()                 -> GM: pick an exported JSON file and (after a yes/no warning) replace the
+ *                                    world's list -> Promise<boolean>
+ *   .resetList()                  -> GM: replaces the world's list with the module's default list -> Promise<boolean>
+ *   .configureItem(item)          -> GM: opens the Automatic / Always / Never dialog
+ *   GM-only members do nothing for players (false, or undefined for exportList / configureItem).
  */
 
 const MODULE_ID = "dxcufgbs-death-trigger";
