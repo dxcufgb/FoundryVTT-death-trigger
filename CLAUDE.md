@@ -24,7 +24,7 @@ the Death Trigger list. No build step and no npm dependencies.
 - Settings are all `world` scope. The list lives in the hidden `TriggerList` setting (`config: false`, type Object);
   `listCache` must be reset whenever it changes (`saveList` and the setting's `onChange` do this).
 - Hook handlers catch and `console.error` their errors; a failure must never break the actor update.
-- Update `README.md` when behaviour, settings or the API change.
+- Update the wiki (not `README.md`, which only has the install steps and links to the wiki) when behaviour, settings or the API change.
 
 ## Review focus
 - **One client acts**: detection (`checkActor`) and list setup/merge (`ensureList`, `mergeNewDefaults`) run only where
