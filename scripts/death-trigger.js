@@ -46,6 +46,8 @@
  *   GM-only members do nothing for players (false, or undefined for exportList / configureItem).
  */
 
+import { registerDebugRecorder, crumb, noteError, errorState } from "./debug-recorder.js";
+
 const MODULE_ID = "dxcufgbs-death-trigger";
 const PREV_HP_KEY = "dxdtPrevHp";
 const LIST_KEY = "TriggerList";
@@ -53,6 +55,9 @@ const DEFAULT_LIST_PATH = `modules/${MODULE_ID}/data/death-triggers.json`;
 
 /** Actors (by uuid) that already got an alert while at 0 HP. Cleared when HP goes above 0. */
 const alerted = new Set();
+
+/** How often each detection outcome happened on this client since the page loaded (for the Debug Recorder). */
+const checkOutcomes = {};
 
 /* -------------------------------------------- */
 /*  Settings                                    */
@@ -118,6 +123,9 @@ Hooks.once("init", () => {
     default: 0.8,
     range: { min: 0, max: 1, step: 0.05 }
   });
+
+  // Optional: Dxcufgb's Debug Recorder (does nothing without it)
+  registerDebugRecorder(MODULE_ID, debugSnapshot);
 });
 
 Hooks.once("ready", async () => {
@@ -132,9 +140,55 @@ Hooks.once("ready", async () => {
     await ensureList();
     await mergeNewDefaults();
   } catch (err) {
+    noteError("listSetup");
+    crumb("list.error", { code: "listSetup" });
     console.error(`${MODULE_ID} | ensureList`, err);
   }
 });
+
+/* -------------------------------------------- */
+/*  Debug Recorder snapshot                     */
+/* -------------------------------------------- */
+
+/**
+ * What helps debug this module on this client, for Dxcufgb's Debug Recorder. Plain JSON with counts, booleans,
+ * fixed ids and the game system's package id only: no list entry, item, actor or file names, and not the HP path
+ * text (a setting).
+ */
+function debugSnapshot() {
+  const list = getList();
+  const features = list?.features ?? [];
+  const matchTypes = { exact: 0, contains: 0 };
+  let custom = 0, withAliases = 0;
+  for (const entry of features) {
+    if (entry?.match === "contains") matchTypes.contains++;
+    else matchTypes.exact++;
+    if (entry?.type === "custom" || entry?.trigger === "custom") custom++;
+    if (Array.isArray(entry?.aliases) && entry.aliases.length) withAliases++;
+  }
+  return {
+    isGM: game.user?.isGM === true,
+    isResponsibleGM: isResponsibleGM(),
+    activeGMPresent: !!game.users?.activeGM,
+    systemId: game.system?.id ?? null,
+    hpPathSource: game.settings.get(MODULE_ID, "HpPath")?.trim() ? "setting" : (game.system?.primaryTokenAttribute ? "system" : "fallback"),
+    soundSet: !!game.settings.get(MODULE_ID, "Sound"),
+    list: {
+      present: !!list,
+      version: list ? listVersion(list) : null,
+      features: features.length,
+      matchTypes,
+      custom,
+      withAliases,
+      triggerTypes: list?.triggerTypes && typeof list.triggerTypes === "object" ? Object.keys(list.triggerTypes).length : 0,
+      cacheBuilt: Array.isArray(listCache),
+      cacheSize: listCache?.length ?? 0
+    },
+    alertedActors: alerted.size,
+    checkOutcomes: { ...checkOutcomes },
+    errors: errorState()
+  };
+}
 
 /* -------------------------------------------- */
 /*  Helpers                                     */
@@ -262,6 +316,8 @@ async function loadDefaultList() {
     if (!Array.isArray(data?.features)) throw new Error("no features array");
     return data;
   } catch (err) {
+    noteError("defaultListLoad");
+    crumb("list.error", { code: "defaultListLoad" });
     console.error(`${MODULE_ID} | could not load ${DEFAULT_LIST_PATH}`, err);
     ui.notifications.error(game.i18n.localize("DXDT.Notify.ListLoadFailed"));
     return null;
@@ -309,6 +365,7 @@ async function ensureList() {
   if (getList() || !isResponsibleGM()) return;
   const data = await loadDefaultList();
   if (!data) return;
+  const shipped = data.features.length;
 
   const known = data.features.map(compileEntry);
   for (const keyword of legacyKeywords()) {
@@ -321,6 +378,7 @@ async function ensureList() {
   data.triggerTypes.custom ??= "Added by the GM from an item's context menu";
 
   await saveList(data);
+  crumb("list.ensure", { version: listVersion(data), features: data.features.length, legacyAdded: data.features.length - shipped });
   ui.notifications.info(game.i18n.format("DXDT.Notify.ListCreated", { count: data.features.length }));
 }
 
@@ -346,7 +404,10 @@ async function mergeNewDefaults() {
 
   const worldVersion = listVersion(current);
   const defaultVersion = listVersion(data);
-  if (defaultVersion <= worldVersion) return;
+  if (defaultVersion <= worldVersion) {
+    crumb("list.merge", { worldVersion, defaultVersion, merged: false, added: 0 });
+    return;
+  }
 
   const merged = foundry.utils.deepClone(current);
   const ids = new Set(merged.features.map(e => e?.id).filter(Boolean));
@@ -365,6 +426,7 @@ async function mergeNewDefaults() {
   merged.triggerTypes = { ...(data.triggerTypes ?? {}), ...(merged.triggerTypes ?? {}) };
 
   await saveList(merged);
+  crumb("list.merge", { worldVersion, defaultVersion, merged: true, added: added.length });
   if (added.length) {
     ui.notifications.info(game.i18n.format("DXDT.Notify.ListUpdated", { count: added.length, items: added.join(", ") }));
   }
@@ -382,6 +444,7 @@ async function addToList(item) {
   data.features.push(customEntry(name, { item: typeof item === "string" ? null : item }));
 
   await saveList(data);
+  crumb("list.add", { fromItem: typeof item !== "string", features: data.features.length });
   ui.notifications.info(game.i18n.format("DXDT.Notify.Added", { item: name }));
   return true;
 }
@@ -404,6 +467,7 @@ async function removeFromList(nameOrItem) {
   const exact = matching.filter(c => !c.contains);
   const doomed = new Set((exact.length ? exact : matching).map(c => c.entry.id ?? c.entry));
   data.features = data.features.filter(entry => !doomed.has(entry.id ?? entry));
+  crumb("list.remove", { matching: matching.length, exact: exact.length, removed: before - data.features.length });
   if (data.features.length === before) return false;
 
   await saveList(data);
@@ -420,6 +484,7 @@ function exportList() {
     return;
   }
   const file = `death-triggers-${game.world.id}.json`;
+  crumb("list.export", { features: data.features.length });
   foundry.utils.saveDataToFile(JSON.stringify(data, null, 2), "application/json", file);
   ui.notifications.info(game.i18n.format("DXDT.Notify.Exported", { file, count: data.features.length }));
 }
@@ -490,12 +555,16 @@ async function importListFlow() {
   const fmt = (key, data = {}) => game.i18n.format(`DXDT.Import.${key}`, data);
 
   const picked = await pickImportFile();
-  if (!picked || typeof picked !== "object") return false;
+  if (!picked || typeof picked !== "object") {
+    crumb("list.import", { result: "noFile" });
+    return false;
+  }
 
   let data;
   try {
     data = validateImport(picked.text);
   } catch (err) {
+    crumb("list.import", { result: "invalid" });
     ui.notifications.error(fmt("Failed", { error: err.message }));
     return false;
   }
@@ -516,9 +585,13 @@ async function importListFlow() {
       { action: "no", label: fmt("No"), icon: "fa-solid fa-xmark", default: true }
     ]
   });
-  if (answer !== "yes") return false;
+  if (answer !== "yes") {
+    crumb("list.import", { result: "declined", features: data.features.length });
+    return false;
+  }
 
   await saveList(data);
+  crumb("list.import", { result: "replaced", features: data.features.length, previous: currentCount });
   ui.notifications.info(fmt("Done", { file: picked.name, count: data.features.length }));
   return true;
 }
@@ -529,6 +602,7 @@ async function resetList() {
   const data = await loadDefaultList();
   if (!data) return false;
   await saveList(data);
+  crumb("list.reset", { version: listVersion(data), features: data.features.length });
   ui.notifications.info(game.i18n.format("DXDT.Notify.ListCreated", { count: data.features.length }));
   return true;
 }
@@ -711,6 +785,7 @@ async function configureItem(item) {
     ]
   });
   if (!mode || mode === "cancel" || mode === current) return;
+  crumb("item.configure", { from: current, to: ["auto", "always", "never"].includes(mode) ? mode : "other" });
 
   if (mode === "auto") await item.unsetFlag(MODULE_ID, "trigger");
   else await item.setFlag(MODULE_ID, "trigger", mode === "always");
@@ -749,6 +824,7 @@ async function excludeFromCard(item) {
     buttons
   });
   if (!choice || choice === "cancel") return false;
+  crumb("card.exclude", { choice: ["token", "actor", "name"].includes(choice) ? choice : "other", tokenActor: !!actor?.isToken });
 
   if (choice === "token") await item.setFlag(MODULE_ID, "trigger", false);
   else if (choice === "actor") await (baseItem ?? item).setFlag(MODULE_ID, "trigger", false);
@@ -796,6 +872,7 @@ Hooks.on("preUpdateActor", (actor, changes, options) => {
     if (!foundry.utils.hasProperty(changes, path)) return;
     options[PREV_HP_KEY] = getHp(actor);
   } catch (err) {
+    noteError("preUpdateActor");
     console.error(`${MODULE_ID} | preUpdateActor`, err);
   }
 });
@@ -804,6 +881,7 @@ Hooks.on("updateActor", (actor, changes, options) => {
   try {
     checkActor(actor, changes, options);
   } catch (err) {
+    noteError("updateActor");
     console.error(`${MODULE_ID} | updateActor`, err);
   }
 });
@@ -814,38 +892,55 @@ Hooks.on("updateToken", (tokenDoc, changes, options) => {
     if (tokenDoc.actorLink || !changes.delta?.system || !tokenDoc.actor) return;
     const path = `system.${hpPathFor(tokenDoc.actor)}`;
     if (!foundry.utils.hasProperty({ system: changes.delta.system }, path)) return;
-    checkActor(tokenDoc.actor, { system: changes.delta.system }, options);
+    checkActor(tokenDoc.actor, { system: changes.delta.system }, options, "token");
   } catch (err) {
+    noteError("updateToken");
     console.error(`${MODULE_ID} | updateToken`, err);
   }
 });
 
-function checkActor(actor, changes, options) {
+/**
+ * Record a detection outcome (a fixed code) for the Debug Recorder: counted for the snapshot and left as a
+ * breadcrumb. Only codes, the actor's document type and counts, never names.
+ */
+function noteCheck(outcome, actor, extra = {}) {
+  checkOutcomes[outcome] = (checkOutcomes[outcome] ?? 0) + 1;
+  crumb("hp.check", () => ({ outcome, actorType: actor?.type ?? null, tokenActor: !!actor?.isToken, ...extra }));
+}
+
+function checkActor(actor, changes, options, source = "actor") {
   if (!isResponsibleGM() || !actor) return;
 
   const path = `system.${hpPathFor(actor)}`;
   if (!foundry.utils.hasProperty(changes, path)) return;
 
   const hp = getHp(actor);
-  if (hp === null) return;
+  if (hp === null) return noteCheck("hpNotNumber", actor, { source });
 
   const key = actor.uuid;
   if (hp > 0) {
-    alerted.delete(key);
+    if (alerted.delete(key)) noteCheck("revived", actor, { source });
     return;
   }
 
   // Already at 0 before this update? Then it's not a new "death".
   const prev = options?.[PREV_HP_KEY];
-  if (typeof prev === "number" && prev <= 0) return;
-  if (alerted.has(key)) return;
+  const hadPrev = typeof prev === "number";
+  if (hadPrev && prev <= 0) return noteCheck("alreadyDown", actor, { source });
+  if (alerted.has(key)) return noteCheck("alreadyAlerted", actor, { source, hadPrev });
 
-  if (game.settings.get(MODULE_ID, "IgnorePlayerOwned") && actor.hasPlayerOwner) return;
+  if (game.settings.get(MODULE_ID, "IgnorePlayerOwned") && actor.hasPlayerOwner) return noteCheck("playerOwned", actor, { source });
 
   const triggers = findTriggers(actor);
-  if (!triggers.length) return;
+  if (!triggers.length) return noteCheck("noTriggers", actor, { source, items: actor.items?.size ?? 0 });
 
   alerted.add(key);
+  const reasons = {};
+  for (const item of triggers) {
+    const r = triggerStatus(item).reason;
+    reasons[`reason_${r}`] = (reasons[`reason_${r}`] ?? 0) + 1;
+  }
+  noteCheck("alert", actor, { source, hadPrev, triggers: triggers.length, ...reasons });
   postAlert(actor, triggers);
 }
 
@@ -886,6 +981,7 @@ async function postAlert(actor, triggers) {
       ${buttons}
     </div>`;
 
+  crumb("alert.post", { triggers: triggers.length, gmRecipients: game.users.filter(u => u.isGM).length });
   return ChatMessage.implementation.create({
     content,
     speaker: { alias: game.i18n.localize("DXDT.Chat.Title") },
@@ -904,6 +1000,7 @@ async function postAlert(actor, triggers) {
 Hooks.on("createChatMessage", message => {
   if (!game.user.isGM || !message.getFlag(MODULE_ID, "alert")) return;
   const src = game.settings.get(MODULE_ID, "Sound");
+  crumb("alert.sound", { played: !!src });
   if (!src) return;
   const volume = game.settings.get(MODULE_ID, "Volume");
   foundry.audio.AudioHelper.play({ src, volume, autoplay: true, loop: false }, false);
@@ -921,7 +1018,9 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
     btn.addEventListener("click", async event => {
       event.preventDefault();
       event.stopPropagation();
+      const action = btn.classList.contains("dxdt-open") ? "open" : btn.classList.contains("dxdt-exclude") ? "exclude" : "use";
       const item = await fromUuid(btn.dataset.itemUuid);
+      crumb("card.button", { action, itemFound: !!item });
       if (!item) {
         ui.notifications.warn(game.i18n.localize("DXDT.Notify.ItemMissing"));
         return;
@@ -937,6 +1036,10 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
       btn.disabled = true;
       try {
         await useItem(item);
+      } catch (err) {
+        noteError("useItem");
+        crumb("item.use.error", { code: "useItem" });
+        throw err;
       } finally {
         btn.disabled = false;
       }
@@ -946,6 +1049,8 @@ Hooks.on("renderChatMessageHTML", (message, html) => {
 
 /** Use an item in whatever way the current system supports. */
 async function useItem(item) {
+  const method = ["use", "roll", "toChat", "toMessage", "displayCard"].find(m => typeof item[m] === "function") ?? "fallback";
+  crumb("item.use", { method, itemType: item.type ?? null });
   if (typeof item.use === "function") return item.use();          // dnd5e and many others
   if (typeof item.roll === "function") return item.roll();        // older / other systems
   if (typeof item.toChat === "function") return item.toChat();
