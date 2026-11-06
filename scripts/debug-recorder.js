@@ -25,6 +25,7 @@ let hooked = false;
 const errorCounts = {};
 let lastErrorCode = null;
 
+/** Register with the recorder's API, once; a failing register() only logs a warning. */
 function attach(api) {
   if (recorder || !moduleId || !snapshotFn || !api || typeof api.register !== "function") return;
   try {
@@ -35,6 +36,7 @@ function attach(api) {
   }
 }
 
+/** The snapshot handed to the recorder: the module's snapshot, or { snapshotError: true } if it throws. */
 function safeSnapshot() {
   try {
     return snapshotFn();
