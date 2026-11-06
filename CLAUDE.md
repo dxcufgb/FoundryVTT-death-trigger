@@ -28,7 +28,8 @@ the Death Trigger list. No build step and no npm dependencies.
 - Hook handlers catch and `console.error` their errors; a failure must never break the actor update.
 - Debug-recorder integration is optional; snapshot/breadcrumb data must never contain names, free text, image paths
   or URLs (no actor, token, item or list entry names, no file names, not the HpPath text). Only counts, booleans,
-  document types and the module's own fixed codes.
+  numbers, document types, package ids (system / module ids, e.g. `systemId`), numeric version strings and the
+  module's own fixed codes.
 - Update the wiki (not `README.md`, which only has the install steps and links to the wiki) when behaviour, settings or the API change.
 
 ## Review focus

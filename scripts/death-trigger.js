@@ -151,8 +151,9 @@ Hooks.once("ready", async () => {
 /* -------------------------------------------- */
 
 /**
- * What helps debug this module on this client, for Dxcufgb's Debug Recorder. Plain JSON with counts, booleans
- * and fixed ids only: no list entry, item, actor or file names, and not the HP path text (a setting).
+ * What helps debug this module on this client, for Dxcufgb's Debug Recorder. Plain JSON with counts, booleans,
+ * fixed ids and the game system's package id only: no list entry, item, actor or file names, and not the HP path
+ * text (a setting).
  */
 function debugSnapshot() {
   const list = getList();

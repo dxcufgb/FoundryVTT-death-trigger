@@ -9,8 +9,9 @@
  * when its API already exists (checked at init and again at ready). It registers only once.
  *
  * Privacy: snapshot and breadcrumb data never contain names, free text, image paths or URLs (no actor, token,
- * item or feature names, no list entries, no file names); only counts, booleans, numbers, document types and this
- * module's own fixed ids and reason codes. A recorder error never reaches the module: every call is try/catch'ed.
+ * item or feature names, no list entries, no file names); only counts, booleans, numbers, document types, package
+ * ids (system / module ids), numeric version strings and this module's own fixed ids and reason codes. A recorder
+ * error never reaches the module: every call is try/catch'ed.
  */
 
 export const RECORDER_ID = "dxcufgbs-debug-recorder";
