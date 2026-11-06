@@ -11,7 +11,9 @@ the Death Trigger list. No build step and no npm dependencies.
   name matching (`normalizeName`, `withoutParens`, `entryMatches`), `triggerStatus` / `findTriggers`, the context-menu
   entries, the item sheet header button (`configureItem`), HP detection (`preUpdateActor` / `updateActor` /
   `updateToken` → `checkActor`), the alert card (`postAlert`), its sound and buttons, `useItem`, and the module API
-  (`game.modules.get("dxcufgbs-death-trigger").api`).
+  (`game.modules.get("dxcufgbs-death-trigger").api`), and the Debug Recorder snapshot (`debugSnapshot`).
+- `scripts/debug-recorder.js` – optional integration with Dxcufgb's Debug Recorder (`dxcufgbs-debug-recorder`):
+  registers the snapshot and exports `crumb(key, data)`, a no-op unless the recorder is active and recording.
 - `data/death-triggers.json` – the default list shipped with the module (`version`, `triggerTypes`, `features`; new
   entries carry `listVersion`). Copied into each world on first GM start.
 - `styles/death-trigger.css` – the card and dialogs. `lang/en.json` – all strings (`DXDT.*`).
@@ -24,6 +26,9 @@ the Death Trigger list. No build step and no npm dependencies.
 - Settings are all `world` scope. The list lives in the hidden `TriggerList` setting (`config: false`, type Object);
   `listCache` must be reset whenever it changes (`saveList` and the setting's `onChange` do this).
 - Hook handlers catch and `console.error` their errors; a failure must never break the actor update.
+- Debug-recorder integration is optional; snapshot/breadcrumb data must never contain names, free text, image paths
+  or URLs (no actor, token, item or list entry names, no file names, not the HpPath text). Only counts, booleans,
+  document types and the module's own fixed codes.
 - Update the wiki (not `README.md`, which only has the install steps and links to the wiki) when behaviour, settings or the API change.
 
 ## Review focus
