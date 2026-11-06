@@ -26,12 +26,14 @@ let hooked = false;
 const errorCounts = {};
 let lastErrorCode = null;
 
-/** Register with the recorder's API, once; a failing register() only logs a warning. */
+/**
+ * Register with the recorder's API, once. The API is kept only when register() succeeds (it returns false or throws
+ * on failure; a throw is logged), so the fallback on ready can try again.
+ */
 function attach(api) {
   if (recorder || !moduleId || !snapshotFn || !api || typeof api.register !== "function") return;
   try {
-    api.register(moduleId, { snapshot: safeSnapshot });
-    recorder = api;
+    if (api.register(moduleId, { snapshot: safeSnapshot }) !== false) recorder = api;
   } catch (err) {
     console.warn(`${moduleId} | could not register with ${RECORDER_ID}`, err);
   }
