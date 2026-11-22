@@ -1,5 +1,6 @@
 {
   "DXDT": {
+    "Deprecated": "Death Trigger Alerts is deprecated: it has been merged into Dxcufgb's Reminders. Please switch to that module.",
     "Settings": {
       "ExportList": {
         "Name": "Export Death Trigger list",

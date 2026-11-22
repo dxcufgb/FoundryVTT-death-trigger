@@ -8,11 +8,16 @@
 
 <a href="https://dxcufgb.github.io/FVTT-dev-showcase/"><img src="https://dxcufgb.github.io/FVTT-dev-showcase/assets/img/workshop-badge.png" alt="Dxcufgb's Workshop: every Foundry VTT project, video and changelog in one place" width="650"></a>
 
+> [!WARNING]
+> **Deprecated.** This module has been merged into **Dxcufgb's Reminders**. Install that module instead; Death Trigger Alerts will not receive further updates.
+
 System-agnostic helper that alerts the GM with a whispered chat card and a sound when an NPC with a death-triggered feature (Undead Fortitude, Death Burst, Death Throes, ...) is reduced to 0 HP, with a button to use that feature.
 
 **Foundry VTT:** v13
 
-## Installation
+## Installation (legacy)
+
+This module is deprecated: install **Dxcufgb's Reminders** instead. The steps below are only for worlds that still use Death Trigger Alerts.
 
 In Foundry: **Add-on Modules → Install Module**, paste this link into **Manifest URL** at the bottom, and click **Install**:
 
