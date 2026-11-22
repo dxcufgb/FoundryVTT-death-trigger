@@ -136,7 +136,11 @@ Hooks.once("ready", async () => {
       getList, isListed, addToList, removeFromList, exportList, importList: importListFlow, resetList
     };
   }
-  if (game.user.isGM) ui.notifications.warn(game.i18n.localize("DXDT.Deprecated"), { permanent: true });
+  try {
+    if (game.user.isGM) ui.notifications.warn(game.i18n.localize("DXDT.Deprecated"), { permanent: true });
+  } catch (err) {
+    console.error(`${MODULE_ID} | deprecation notice`, err);
+  }
   try {
     await ensureList();
     await mergeNewDefaults();

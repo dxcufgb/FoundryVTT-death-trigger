@@ -15,7 +15,9 @@ System-agnostic helper that alerts the GM with a whispered chat card and a sound
 
 **Foundry VTT:** v13
 
-## Installation
+## Installation (legacy)
+
+This module is deprecated: install **Dxcufgb's Reminders** instead. The steps below are only for worlds that still use Death Trigger Alerts.
 
 In Foundry: **Add-on Modules → Install Module**, paste this link into **Manifest URL** at the bottom, and click **Install**:
 
