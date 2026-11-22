@@ -136,6 +136,7 @@ Hooks.once("ready", async () => {
       getList, isListed, addToList, removeFromList, exportList, importList: importListFlow, resetList
     };
   }
+  if (game.user.isGM) ui.notifications.warn(game.i18n.localize("DXDT.Deprecated"), { permanent: true });
   try {
     await ensureList();
     await mergeNewDefaults();
